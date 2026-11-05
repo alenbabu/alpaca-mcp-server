@@ -25,4 +25,4 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 ENV PATH="/app/.venv/bin:$PATH"
 
 # Use the local stdio transport unless the operator explicitly configures secured HTTP.
-CMD ["alpaca-mcp-server"]
+CMD ["alpaca-mcp-server", "--transport", "streamable-http", "--host", "0.0.0.0"]

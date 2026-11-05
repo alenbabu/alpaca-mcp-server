@@ -17,6 +17,7 @@ from typing import Any
 
 import httpx
 from fastmcp import FastMCP
+from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
 from fastmcp.server.providers.openapi.routing import MCPType
 
 from .readme_docs import ReadMeClientFactory, register_readme_docs_tools
@@ -169,8 +170,12 @@ def build_server(
         finally:
             for c in clients:
                 await c.aclose()
-
-    main = FastMCP("Alpaca MCP Server", lifespan=lifespan)
+    token = os.environ["MCP_AUTH_TOKEN"]
+    auth = StaticTokenVerifier(
+        tokens={token: {"client_id": "claude-mobile", "scopes": ["mcp"]}},
+        required_scopes=["mcp"],
+    )
+    main = FastMCP("Alpaca MCP Server", lifespan=lifespan, auth=auth)
     main.add_middleware(TrustBoundaryMiddleware())
 
     if trading_client is not None:
